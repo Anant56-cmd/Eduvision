@@ -1,0 +1,101 @@
+import { GoogleGenAI } from "@google/genai";
+
+let aiInstance: GoogleGenAI | null = null;
+
+const getAI = () => {
+  if (aiInstance) return aiInstance;
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    console.warn("GEMINI_API_KEY is not set. AI features will be disabled.");
+    return null;
+  }
+  aiInstance = new GoogleGenAI({ apiKey });
+  return aiInstance;
+};
+
+export const generateCourseSummary = async (courseTitle: string, description: string, lessons: any[]) => {
+  const ai = getAI();
+  if (!ai) throw new Error("AI Assistant is not configured.");
+  const lessonTitles = lessons.map(l => l.title).join(", ");
+  const prompt = `
+    Summarize the following e-learning course for a student. 
+    Provide a concise overview of what they will learn and the key takeaways.
+    
+    Course Title: ${courseTitle}
+    Description: ${description}
+    Lessons: ${lessonTitles}
+    
+    Format the response in a professional, encouraging tone. Use bullet points for key takeaways.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: "user", parts: [{ text: prompt }] }]
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Gemini Error:", error);
+    throw new Error("Failed to generate AI summary.");
+  }
+};
+
+export const generateQuizQuestions = async (lessonTitle: string, content: string) => {
+  const ai = getAI();
+  if (!ai) throw new Error("AI Assistant is not configured.");
+  const prompt = `
+    Create 3 multiple-choice questions for a quiz based on the following lesson content.
+    Return the result as a JSON array of objects with the following structure:
+    [
+      {
+        "question": "The question text",
+        "options": ["Option A", "Option B", "Option C", "Option D"],
+        "correctAnswer": "The exact text of the correct option"
+      }
+    ]
+    
+    Lesson Title: ${lessonTitle}
+    Content: ${content}
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: "user", parts: [{ text: prompt }] }]
+    });
+    const text = response.text;
+    if (!text) return [];
+    // Extract JSON from potential markdown blocks
+    const jsonMatch = text.match(/\[.*\]/s);
+    return jsonMatch ? JSON.parse(jsonMatch[0]) : [];
+  } catch (error) {
+    console.error("Gemini Quiz Error:", error);
+    throw new Error("Failed to generate AI quiz.");
+  }
+};
+
+export const askLearningAssistant = async (question: string, context: string) => {
+  const ai = getAI();
+  if (!ai) throw new Error("AI Assistant is not configured.");
+  const prompt = `
+    You are a helpful learning assistant for Nova Academy. 
+    Answer the student's question based on the following context (lesson content or course info).
+    If the answer is not in the context, use your general knowledge but stay relevant to the topic.
+    
+    Context: ${context}
+    Student Question: ${question}
+    
+    Keep the answer concise, encouraging, and clear.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: [{ role: "user", parts: [{ text: prompt }] }]
+    });
+    return response.text;
+  } catch (error) {
+    console.error("Gemini Assistant Error:", error);
+    throw new Error("Failed to get response from AI assistant.");
+  }
+};

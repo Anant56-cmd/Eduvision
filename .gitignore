@@ -1,0 +1,21 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Database files
+database.sqlite
+*.sqlite
+*.sqlite-journal
+
+# Editor settings
+.vscode/
+
+# Media & large binary files
+*.mp4
+*.mkv
+*.mov

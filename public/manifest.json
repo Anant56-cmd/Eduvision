@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "short_name": "EduVision",
+  "name": "EduVision - AI Learning Platform",
+  "description": "Next-generation AI-powered learning management platform.",
+  "icons": [
+    {
+      "src": "/eduvision-icon.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/eduvision-icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "theme_color": "#6366f1"
+}
