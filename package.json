@@ -1,7 +1,8 @@
 {
-  "name": "react-example",
+  "name": "eduvision",
+  "version": "1.0.0",
+  "description": "AI-Native Learning Management System with V8 Sandboxed Code Execution, SuperMemo-2 Spaced Repetition, and Real-Time WebSocket Streaming",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
